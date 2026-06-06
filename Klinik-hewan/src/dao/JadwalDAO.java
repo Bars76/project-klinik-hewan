@@ -18,7 +18,6 @@ public class JadwalDAO implements CRUD<Jadwal> {
         this.conn = Koneksi.getConnection();
     }
 
-    // === Ambil data dokter untuk combobox ===
     public List<String[]> getAllDokter() {
         List<String[]> list = new ArrayList<>();
         String sql = "SELECT id_dokter, nama_dokter, spesialis FROM dokter";
@@ -36,7 +35,6 @@ public class JadwalDAO implements CRUD<Jadwal> {
         return list;
     }
 
-    // === Ambil data hewan untuk combobox ===
     public List<String[]> getAllHewan() {
         List<String[]> list = new ArrayList<>();
         String sql = "SELECT id_hewan, nama_hewan, jenis FROM hewan";
@@ -54,7 +52,6 @@ public class JadwalDAO implements CRUD<Jadwal> {
         return list;
     }
 
-    // === INSERT dengan field lengkap ===
     @Override
     public void insert(Jadwal j) {
         String sql = "INSERT INTO jadwal (id_dokter, tanggal, jam, status, id_hewan, keluhan, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())";
@@ -71,7 +68,6 @@ public class JadwalDAO implements CRUD<Jadwal> {
         }
     }
 
-    // === UPDATE dengan field lengkap ===
     @Override
     public void update(Jadwal j) {
         String sql = "UPDATE jadwal SET id_dokter=?, tanggal=?, jam=?, status=?, id_hewan=?, keluhan=? WHERE id_jadwal=?";
@@ -89,7 +85,6 @@ public class JadwalDAO implements CRUD<Jadwal> {
         }
     }
 
-    // === DELETE ===
     @Override
     public void delete(int id) {
         String sql = "DELETE FROM jadwal WHERE id_jadwal=?";
@@ -101,7 +96,6 @@ public class JadwalDAO implements CRUD<Jadwal> {
         }
     }
 
-    // === TAMPIL DATA untuk JTable (dengan JOIN ke dokter dan hewan) ===
     @Override
     public DefaultTableModel getData() {
         DefaultTableModel model = new DefaultTableModel();
