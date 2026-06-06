@@ -18,6 +18,7 @@ public class JadwalDAO implements CRUD<Jadwal> {
         this.conn = Koneksi.getConnection();
     }
 
+    // === Ambil data dokter untuk combobox ===
     public List<String[]> getAllDokter() {
         List<String[]> list = new ArrayList<>();
         String sql = "SELECT id_dokter, nama_dokter, spesialis FROM dokter";
@@ -35,33 +36,60 @@ public class JadwalDAO implements CRUD<Jadwal> {
         return list;
     }
 
+    // === Ambil data hewan untuk combobox ===
+    public List<String[]> getAllHewan() {
+        List<String[]> list = new ArrayList<>();
+        String sql = "SELECT id_hewan, nama_hewan, jenis FROM hewan";
+        try (PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                String id = String.valueOf(rs.getInt("id_hewan"));
+                String nama = rs.getString("nama_hewan");
+                String jenis = rs.getString("jenis");
+                list.add(new String[]{id, nama, jenis});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    // === INSERT dengan field lengkap ===
     @Override
     public void insert(Jadwal j) {
-        String sql = "INSERT INTO jadwal (id_dokter, tanggal, jam) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO jadwal (id_dokter, tanggal, jam, status, id_hewan, keluhan, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, j.getIdDokter());
             ps.setString(2, j.getTanggal());
             ps.setString(3, j.getJam());
+            ps.setString(4, j.getStatus());
+            ps.setInt(5, j.getIdHewan());
+            ps.setString(6, j.getKeluhan());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    // === UPDATE dengan field lengkap ===
     @Override
     public void update(Jadwal j) {
-        String sql = "UPDATE jadwal SET id_dokter=?, tanggal=?, jam=? WHERE id_jadwal=?";
+        String sql = "UPDATE jadwal SET id_dokter=?, tanggal=?, jam=?, status=?, id_hewan=?, keluhan=? WHERE id_jadwal=?";
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, j.getIdDokter());
             ps.setString(2, j.getTanggal());
             ps.setString(3, j.getJam());
-            ps.setInt(4, j.getIdJadwal());
+            ps.setString(4, j.getStatus());
+            ps.setInt(5, j.getIdHewan());
+            ps.setString(6, j.getKeluhan());
+            ps.setInt(7, j.getIdJadwal());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    // === DELETE ===
     @Override
     public void delete(int id) {
         String sql = "DELETE FROM jadwal WHERE id_jadwal=?";
@@ -73,23 +101,35 @@ public class JadwalDAO implements CRUD<Jadwal> {
         }
     }
 
+    // === TAMPIL DATA untuk JTable (dengan JOIN ke dokter dan hewan) ===
     @Override
     public DefaultTableModel getData() {
         DefaultTableModel model = new DefaultTableModel();
         model.addColumn("ID Jadwal");
-        model.addColumn("Nama Dokter");
+        model.addColumn("Dokter");
+        model.addColumn("Hewan");
         model.addColumn("Tanggal");
         model.addColumn("Jam");
-        String sql = "SELECT j.id_jadwal, d.nama_dokter, j.tanggal, j.jam " +
-                     "FROM jadwal j JOIN dokter d ON j.id_dokter = d.id_dokter";
+        model.addColumn("Status");
+        model.addColumn("Keluhan");
+       // model.addColumn("Dibuat pada");
+
+        String sql = "SELECT j.id_jadwal, d.nama_dokter, h.nama_hewan, j.tanggal, j.jam, j.status, j.keluhan, j.created_at " +
+                     "FROM jadwal j " +
+                     "JOIN dokter d ON j.id_dokter = d.id_dokter " +
+                     "LEFT JOIN hewan h ON j.id_hewan = h.id_hewan";
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 model.addRow(new Object[]{
                     rs.getInt("id_jadwal"),
                     rs.getString("nama_dokter"),
+                    rs.getString("nama_hewan") == null ? "-" : rs.getString("nama_hewan"),
                     rs.getString("tanggal"),
-                    rs.getString("jam")
+                    rs.getString("jam"),
+                    rs.getString("status"),
+                    rs.getString("keluhan") == null ? "-" : rs.getString("keluhan"),
+                   // rs.getString("created_at") == null ? "-" : rs.getString("created_at")
                 });
             }
         } catch (SQLException e) {
