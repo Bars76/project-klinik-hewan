@@ -9,17 +9,28 @@ public class Jadwal {
     private int idDokter;
     private String tanggal;
     private String jam;
+    private String status;      // Menunggu, Selesai, Dibatalkan
+    private int idHewan;        // Foreign key ke tabel hewan
+    private String keluhan;     // Keluhan pemilik
+    private String createdAt;   // Tanggal pembuatan jadwal
 
     public Jadwal() {
+        // Set default status
+        this.status = "Menunggu";
     }
 
-    public Jadwal(int idJadwal, int idDokter, String tanggal, String jam) {
+    public Jadwal(int idJadwal, int idDokter, String tanggal, String jam, String status, int idHewan, String keluhan, String createdAt) {
         this.idJadwal = idJadwal;
         this.idDokter = idDokter;
         this.tanggal = tanggal;
         this.jam = jam;
+        this.status = status;
+        this.idHewan = idHewan;
+        this.keluhan = keluhan;
+        this.createdAt = createdAt;
     }
 
+    // Getter dan Setter
     public int getIdJadwal() {
         return idJadwal;
     }
@@ -50,5 +61,37 @@ public class Jadwal {
 
     public void setJam(String jam) {
         this.jam = jam;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getIdHewan() {
+        return idHewan;
+    }
+
+    public void setIdHewan(int idHewan) {
+        this.idHewan = idHewan;
+    }
+
+    public String getKeluhan() {
+        return keluhan;
+    }
+
+    public void setKeluhan(String keluhan) {
+        this.keluhan = keluhan;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
     }
 }
